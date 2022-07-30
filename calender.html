@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="container">
+    <div>
+      <button onclick="changeMonth(-1)">&lt;</button>
+      <input type="number" id="year" value="2022" style="width:80px;display: initial;">
+      <button onclick="changeMonth(-1)">&gt;</button>
+      <select id="month" style="width:80px;display:initial">
+        <option value="1">1월</option>
+        <option value="2">2월</option>
+        <option value="3">3월</option>
+        <option value="4">4월</option>
+        <option value="5">5월</option>
+        <option value="6">6월</option>
+        <option value="7">7월</option>
+        <option value="8">8월</option>
+        <option value="9">9월</option>
+        <option value="10">10월</option>
+        <option value="11">11월</option>
+        <option value="12">12월</option>
+      </select>
+    </div>
+    <div>
+      <table style="text-align: center;">
+        <thead>
+          <tr>
+            <th>일</th>
+            <th>월</th>
+            <th>화</th>
+            <th>수</th>
+            <th>목</th>
+            <th>금</th>
+            <th>토</th>
+          </tr>
+        </thead>
+        <tbody id="tb_body">
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+  <script>
+    //윤년인지 아닌지 체크
+    function checkLeapYear(){
+      //400으로 나누어 떨어지면 윤년이다.
+      if(year % 400 === 0){
+        return true
+      }else if(year % 100 === 0) {
+        //100으로 나누어 떨어지면 평년
+        return false
+      }else if(year % 4 ===0){
+        //4로 나누어 떨어지면 윤년
+        return true
+      }else{
+        //나머지는 다 윤년이 아님
+        return false
+      }
+    }
+    //각 날의 첫날이 무슨 요일인지 반환하는 함수
+    function getFirstDayofWeek(year,month){
+      if(month < 10) month = '0' + month;
+      return (new Date(year+'-'+month+'-01').getDay())
+    } 
+    //년도나 달이 바뀌었을때 할일 
+    function changeYearMonth(year,month){
+      let month_day = [31,28,31,30,31,30,31,31,30,31,30,31]
+      if(month === 2){
+        //만약 2월달이면 윤년을 체크해서 윤년이면 1일 늘려준다.
+        if(checkLeapYear(year)) month_day[1] = 29
+      }
+        //첫달의 요일 반환
+      let first_day_of_week = getFirstDayofWeek(year,month)
+      let arr_calender = []
+        //캘린더의 첫번째줄 빈칸을 만드는 함수
+      for(let i=0; i<first_day_of_week; i++){
+        arr_calender.push('')
+      }
+      for(let i = 1; i <= month_day[month-1]; i++){
+        arr_calender.push(String(i));
+      }
+      // 캘린더의 마지막줄 빈칸을 만드는 함수 (예를들어 7로나눈 나머지가 6이면 마지막 줄 한칸이 비워진다.) 
+      let remain_day = 7 - (arr_calender.length % 7)
+      if(remain_day < 7) {
+        for(let i =0 ; i<remain_day; i++){
+          arr_calender.push('')
+        }
+      }
+      renderCalender(arr_calender)
+    }
+    //랜더링 시켜주는 함수
+    function renderCalender(data) { 
+      let h = [];
+      for(let i = 0 ; i < data.length ; i++){
+        // 시작점에 tr 태그를 push
+        if(i === 0 ){
+          h.push('<tr>')
+        }else if(i % 7 ===0 ){
+        // 나머지가 0 이란것은 캘린더의 한줄이 끝났다는 뜻 
+        // 한줄이 끝나면 tr태그를 닫고 다시 새로운 tr태그 생성
+          h.push('</tr>')
+          h.push('<tr>')
+        }
+        //마지막 닫아줌
+        h.push('<td>' + data[i] + '</td>');
+      }
+      h. push('</tr>')
+      document.querySelector('#tb_body').innerHTML = h.join('');     
+    }
+    //현제 년도와 달
+    let current_year = (new Date()).getFullYear()
+    let current_month = (new Date()).getMonth() +1
+
+    document.querySelector('#year').value = current_year
+    document.querySelector('#month').value = current_month    
+    changeYearMonth(2020,12)
+    
+  </script>
+</html>
